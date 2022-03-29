@@ -138,16 +138,15 @@ class SizeRollingFileTree extends RollingFileTree {
   /// Detects file index based on same [filenamePrefix] and [filenamePostfix]
   /// and based on current files in the log directory.
   void detectFileIndex() {
-    var rootDir = Directory(filenamePrefix);
+    var rootDir = filenamePrefix.contains(Platform.pathSeparator)
+        ? Directory(filenamePrefix.substring(
+            0, filenamePrefix.lastIndexOf(Platform.pathSeparator)))
+        : Directory(filenamePrefix);
     if (!rootDir.existsSync()) {
       /// no files created yet.
       _fileIndex = 0;
       rollToNextFile();
       return;
-    }
-    if (filenamePrefix.contains(Platform.pathSeparator)) {
-      rootDir = Directory(filenamePrefix.substring(
-          0, filenamePrefix.lastIndexOf(Platform.pathSeparator)));
     }
     var logListIndexes = rootDir
         .listSync()
